@@ -151,6 +151,8 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
     if (group.id === 'coherent-quadrant') return hasQuadrantData
     return true
   })
+    // The dashboard's own trade sheets, after the declared groups.
+    .concat(tradeGroups)
 
   if (orientation === 'horizontal') {
     return (
