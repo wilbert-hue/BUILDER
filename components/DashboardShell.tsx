@@ -27,12 +27,13 @@ import { BuyerSurveyView } from '@/components/charts/BuyerSurveyView'
 import { QuadrantView } from '@/components/charts/QuadrantView'
 import { TaxonomyView } from '@/components/charts/TaxonomyView'
 import { PricingAnalysisView } from '@/components/charts/PricingAnalysisView'
+import { TradeDataView } from '@/components/charts/TradeDataView'
 import { InsightsPanel } from '@/components/InsightsPanel'
 import { FilterPresets } from '@/components/filters/FilterPresets'
 import { ChartGroupSelector } from '@/components/filters/ChartGroupSelector'
 import { CustomScrollbar } from '@/components/ui/CustomScrollbar'
 import { GlobalKPICards } from '@/components/GlobalKPICards'
-import { getChartsForGroup } from '@/lib/chart-groups'
+import { getChartsForGroup, tradeTableIdOf } from '@/lib/chart-groups'
 import { suiteSubtitle } from '@/lib/dashboard-title'
 import { getBrand } from '@/lib/brand'
 import { Lightbulb, X, Layers, LayoutGrid, Settings } from 'lucide-react'
@@ -122,6 +123,7 @@ export function DashboardShell({ readOnly = false }: Props) {
     b2bSurveyData,
     b2cSurveyData,
     quadrantData,
+    tradeTables,
   } = useDashboardStore()
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('bar')
@@ -174,6 +176,17 @@ export function DashboardShell({ readOnly = false }: Props) {
   const isTaxonomy = selectedChartGroup === 'taxonomy'
 
   /**
+   * A trade sheet shown verbatim. It carries its own geography in its rows, so
+   * it sits outside the filter sidebar and the country strip alike.
+   */
+  const activeTradeTable = useMemo(() => {
+    const tableId = tradeTableIdOf(selectedChartGroup)
+    if (!tableId) return null
+    return tradeTables?.find((t) => t.id === tableId) ?? null
+  }, [selectedChartGroup, tradeTables])
+  const isTrade = !!activeTradeTable
+
+  /**
    * The filter sidebar and KPI row belong to Market Analysis alone. Every other
    * view renders its own dataset and ignores the filters, so carrying them
    * across would imply they do something.
@@ -186,7 +199,7 @@ export function DashboardShell({ readOnly = false }: Props) {
    * survey, which left a dashboard with only a quadrant or a B2C survey
    * showing no geography at all.
    */
-  const isCountryScoped = !isMarketAnalysis && !isTaxonomy
+  const isCountryScoped = !isMarketAnalysis && !isTaxonomy && !isTrade
 
   /**
     * The strip names the geography the market itself reports on — "Global" for
@@ -507,7 +520,16 @@ export function DashboardShell({ readOnly = false }: Props) {
             {/* Every view except Market Analysis is country-scoped. */}
             <MaybeCountryGate key={selectedChartGroup} enabled={isCountryScoped} countries={countryOptions} covered={gateCovered} open={surveyRegions}>
 
+            {/* A trade sheet stands alone: it has no chart tabs to switch
+                between, so the tab bar below is skipped entirely. */}
+            {activeTradeTable && (
+              <div className="bg-white rounded-lg shadow p-6">
+                <TradeDataView table={activeTradeTable} />
+              </div>
+            )}
+
             {/* Tab Navigation */}
+            {!isTrade && (
             <div className="bg-white rounded-lg shadow">
               <div className="border-b border-gray-200">
                 <div className="flex justify-between items-center">
@@ -618,6 +640,7 @@ export function DashboardShell({ readOnly = false }: Props) {
                 )}
               </div>
             </div>
+            )}
 
             </MaybeCountryGate>
           </main>

@@ -14,6 +14,9 @@ export type ChartGroupId =
   | 'b2b-survey'
   | 'b2c-survey'
   | 'coherent-quadrant'
+  // Trade tables are data-driven: a dashboard declares its own, so their group
+  // ids are minted from the table rather than listed here.
+  | `trade:${string}`
 
 export interface ChartGroup {
   id: ChartGroupId
@@ -93,6 +96,28 @@ export const CHART_GROUPS: ChartGroup[] = [
     icon: '📐'
   }
 ]
+
+/** The group id that shows a given trade table. */
+export function tradeGroupId(tableId: string): ChartGroupId {
+  return `trade:${tableId}`
+}
+
+/** The table id behind a trade group, or null for every other group. */
+export function tradeTableIdOf(groupId: ChartGroupId): string | null {
+  return groupId.startsWith('trade:') ? groupId.slice('trade:'.length) : null
+}
+
+/** The groups a dashboard's trade tables add, in the order the tables are given. */
+export function tradeChartGroups(
+  tables: { id: string; label: string }[] | null | undefined
+): ChartGroup[] {
+  return (tables ?? []).map((t) => ({
+    id: tradeGroupId(t.id),
+    label: t.label,
+    description: `${t.label}, as recorded in the source workbook`,
+    charts: [],
+  }))
+}
 
 /** Dashboards open on the taxonomy: the scope of the report before its numbers. */
 export const DEFAULT_CHART_GROUP: ChartGroupId = 'taxonomy'

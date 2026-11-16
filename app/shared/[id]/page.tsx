@@ -9,6 +9,7 @@ import type { DashboardDocument } from '@/lib/dashboard-mongo'
 import { parseIntelligenceSheet } from '@/lib/intelligence-sheet-types'
 import { reviveBuyerSurvey } from '@/lib/buyer-survey-types'
 import { reviveQuadrantReport } from '@/lib/quadrant-types'
+import { parseTradeTables } from '@/lib/trade-tables'
 
 export default function SharedDashboardPage() {
   const params = useParams()
@@ -34,6 +35,7 @@ export default function SharedDashboardPage() {
     setB2cSurveyData,
     setBuyerSurveyType,
     setQuadrantData,
+    setTradeTables,
     setShowDemoNote,
     setShowDemoQuadrant,
     setShowDemoB2bSurvey,
@@ -90,6 +92,7 @@ export default function SharedDashboardPage() {
       setB2cSurveyData(reviveBuyerSurvey(snapshot.b2cSurveyData, 'b2c'))
       setBuyerSurveyType(snapshot.buyerSurveyType ?? null)
       setQuadrantData(reviveQuadrantReport(snapshot.quadrantData))
+      setTradeTables(parseTradeTables(snapshot.tradeTables))
       setShowDemoNote(snapshot.showDemoNote || false)
       setShowDemoQuadrant(snapshot.showDemoQuadrant || false)
       setShowDemoB2bSurvey(snapshot.showDemoB2bSurvey || false)

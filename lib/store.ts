@@ -6,6 +6,7 @@ import { DEFAULT_CHART_GROUP } from './chart-groups'
 import type { BuyerSurveyReport } from './buyer-survey-types'
 import type { QuadrantReport } from './quadrant-types'
 import type { IntelligenceSheetData } from './intelligence-sheet-types'
+import type { TradeTable } from './trade-tables'
 
 interface DashboardStore {
   data: ComparisonData | null
@@ -38,6 +39,8 @@ interface DashboardStore {
   b2cSurveyData: BuyerSurveyReport | null
   /** Parsed Coherent Quadrant report (JSON export) */
   quadrantData: QuadrantReport | null
+  /** Workbook sheets shown verbatim, each as its own tab (e.g. trade databases) */
+  tradeTables: TradeTable[] | null
   /** Which buyer-survey reports the dashboard should include */
   buyerSurveyType: 'b2b' | 'b2c' | 'both' | null
   pricingAnalysisData: any | null // Store pricing analysis data (similar structure to market data)
@@ -86,6 +89,7 @@ interface DashboardStore {
   setB2cSurveyData: (data: BuyerSurveyReport | null) => void
   setBuyerSurveyType: (type: 'b2b' | 'b2c' | 'both' | null) => void
   setQuadrantData: (data: QuadrantReport | null) => void
+  setTradeTables: (tables: TradeTable[] | null) => void
   setPricingAnalysisData: (data: any | null) => void
   updatePricingFilters: (filters: Partial<FilterState>) => void
   resetPricingFilters: () => void
@@ -288,6 +292,7 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   b2cSurveyData: null,
   buyerSurveyType: null,
   quadrantData: null,
+  tradeTables: null,
   pricingAnalysisData: null,
   pricingFilters: getDefaultPricingFilters(null),
   pricingFiltersLoaded: false,
@@ -516,6 +521,8 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   setBuyerSurveyType: (type) => set({ buyerSurveyType: type }),
 
   setQuadrantData: (data) => set({ quadrantData: data }),
+
+  setTradeTables: (tables) => set({ tradeTables: tables && tables.length ? tables : null }),
 
   setPricingAnalysisData: (data) => {
     console.log('🔧 Store: setPricingAnalysisData called')

@@ -71,6 +71,8 @@ export interface DashboardDocument {
   quadrantData?: unknown
   quadrantCompressed?: string | null
   quadrantS3Key?: string | null
+  /** Workbook sheets carried verbatim, each shown as its own tab */
+  tradeTables?: unknown
   showDemoNote: boolean
   showDemoQuadrant?: boolean
   /** Generated demo Voice of Customer reports */

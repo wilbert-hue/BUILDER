@@ -9,6 +9,7 @@ import { assignPartition } from '@/lib/partition'
 import { cacheSet, cacheInvalidate } from '@/lib/slave-cache'
 import { getPublicAppOrigin } from '@/lib/app-origin'
 import { parseIntelligenceSheet } from '@/lib/intelligence-sheet-types'
+import { parseTradeTables } from '@/lib/trade-tables'
 import { getPublicMongoErrorMessage } from '@/lib/mongo-errors'
 import { getMongoUri } from '@/lib/mongo-config'
 import {
@@ -62,13 +63,16 @@ export async function POST(request: NextRequest) {
     quadrantData,
   } = body
 
+  // Sheets shown verbatim as their own tabs. Small enough to store inline.
+  const tradeTables = parseTradeTables(body.tradeTables)
+
   // A demo dashboard carries no upload: its market name and toggle are the input.
   const hasDemoReport =
     body.showDemoQuadrant === true ||
     body.showDemoB2bSurvey === true ||
     body.showDemoB2cSurvey === true
 
-  if (!data && !rawIntelligenceData && !pricingAnalysisData && !b2bSurveyData && !b2cSurveyData && !quadrantData && !hasDemoReport) {
+  if (!data && !rawIntelligenceData && !pricingAnalysisData && !b2bSurveyData && !b2cSurveyData && !quadrantData && !tradeTables && !hasDemoReport) {
     return NextResponse.json(
       { error: 'No dashboard data provided. Upload at least one data file before generating a link.' },
       { status: 400 }
@@ -135,6 +139,7 @@ export async function POST(request: NextRequest) {
       quadrantData: quadrantPersist.inline,
       quadrantCompressed: quadrantPersist.compressed,
       quadrantS3Key: quadrantPersist.s3Key,
+      tradeTables,
       showDemoNote: body.showDemoNote === true,
       showDemoQuadrant: body.showDemoQuadrant === true,
       showDemoB2bSurvey: body.showDemoB2bSurvey === true,

@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react'
 import { useDashboardStore } from '@/lib/store'
-import { CHART_GROUPS, type ChartGroupId } from '@/lib/chart-groups'
-import { BarChart3, Target, Trophy, Users, Building2, DollarSign, Factory, ShoppingCart, Grid2x2, ListTree } from 'lucide-react'
+import { CHART_GROUPS, tradeChartGroups, tradeTableIdOf, type ChartGroupId } from '@/lib/chart-groups'
+import { BarChart3, Target, Trophy, Users, Building2, DollarSign, Factory, ShoppingCart, Grid2x2, ListTree, Ship } from 'lucide-react'
 import { distributorShortLabel } from '@/lib/module-labels'
 
 // Icon mapping for each chart group
@@ -47,6 +47,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
     b2bSurveyData,
     b2cSurveyData,
     quadrantData,
+    tradeTables,
     showDemoQuadrant,
     showDemoB2bSurvey,
     showDemoB2cSurvey,
@@ -92,6 +93,10 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
   const hasQuadrantData =
     !!(quadrantData?.charted?.length || quadrantData?.others?.length) || showDemoQuadrant
 
+  /** One group per trade sheet the dashboard carries, in the workbook's order. */
+  const tradeGroups = tradeChartGroups(tradeTables)
+  const tradeIds = new Set(tradeGroups.map((g) => g.id))
+
   // Auto-switch to a valid chart group if the currently selected one has no data
   useEffect(() => {
     const isCurrentGroupInvalid =
@@ -103,7 +108,9 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
       (selectedChartGroup === 'pricing-analysis' && !hasPricingAnalysisData) ||
       (selectedChartGroup === 'b2b-survey' && !hasB2bSurveyData) ||
       (selectedChartGroup === 'b2c-survey' && !hasB2cSurveyData) ||
-      (selectedChartGroup === 'coherent-quadrant' && !hasQuadrantData)
+      (selectedChartGroup === 'coherent-quadrant' && !hasQuadrantData) ||
+      // A trade tab whose table this dashboard does not carry.
+      (tradeTableIdOf(selectedChartGroup) !== null && !tradeIds.has(selectedChartGroup))
 
     if (isCurrentGroupInvalid) {
       // Switch to market-analysis as the default fallback
@@ -119,6 +126,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
     hasB2bSurveyData,
     hasB2cSurveyData,
     hasQuadrantData,
+    tradeTables,
     setSelectedChartGroup
   ])
 
@@ -150,7 +158,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="mr-1 text-xs font-semibold text-black">Chart View</h3>
           {availableGroups.map((group) => {
-            const Icon = iconMap[group.id] || BarChart3
+            const Icon = iconMap[group.id] || (tradeIds.has(group.id) ? Ship : BarChart3)
             const isSelected = selectedChartGroup === group.id
             return (
               <button
@@ -181,7 +189,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
 
       <div className="space-y-1">
         {availableGroups.map((group) => {
-          const Icon = iconMap[group.id] || BarChart3
+          const Icon = iconMap[group.id] || (tradeIds.has(group.id) ? Ship : BarChart3)
           const isSelected = selectedChartGroup === group.id
 
           return (
@@ -215,7 +223,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
 
       <div className="mt-2 pt-2 border-t border-gray-100">
         <p className="text-[10px] text-black leading-tight">
-          {CHART_GROUPS.find(g => g.id === selectedChartGroup)?.description || 'Select a view to see related charts'}
+          {availableGroups.find(g => g.id === selectedChartGroup)?.description || 'Select a view to see related charts'}
         </p>
       </div>
     </div>
