@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { NO_DATA_NOTE } from '@/components/DemoDataNote'
 
 /**
  * Gated contact cell in the preview tables. Clicking "Access data" looks the row's
@@ -70,7 +71,12 @@ function lookup(row: Row): Promise<LookupResult> {
   return p
 }
 
-const NOT_FOUND = "Oops, we were not able to find relevant person's data for this company"
+/**
+ * Said once, the same way, wherever nothing was found: the workbook was blank
+ * here and the lookup came back empty too, so there is no data to show and
+ * none to sell.
+ */
+const NOT_FOUND = NO_DATA_NOTE
 
 export function AccessDataCell({ row, field }: { row: Row; field: ContactField }) {
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')

@@ -13,7 +13,7 @@ import { Lock } from 'lucide-react'
 import MethodologyPanel from './MethodologyPanel'
 import { buildDemoMethodology } from '@/lib/demo-methodology'
 import { useGeneratedMethodology } from '@/lib/use-generated-methodology'
-import { DEMO_SUBSCRIBE_NOTE } from '@/components/DemoDataNote'
+import { DEMO_SUBSCRIBE_NOTE, NO_DATA_NOTE } from '@/components/DemoDataNote'
 import { isPlaceholderValue } from '@/lib/intelligence-demo-generator'
 import { useLocksEnabled } from '@/lib/lock-mode'
 import { distributorNoun } from '@/lib/module-labels'
@@ -239,8 +239,6 @@ const PROCUREMENT_PALETTE = [
   { head: '#184E77', cell: '#D4DCE5', border: '#123D5E', text: '#051825' },
 ]
 
-const LOCKED_CELL_NOTE = 'Kindly subscribe to access these details'
-
 /**
  * One shared dashboard shows a lock where these columns are blank, instead of
  * the usual em dash. Scoped to that link by request — every other dashboard
@@ -446,7 +444,7 @@ function PropositionTableDashboard({
                       <AccessDataCell row={row} field={contactFieldOf(String(header))!} />
                     ) : (
                       <span className={suitePreview ? 'text-xs italic text-slate-400' : 'text-slate-400'}>
-                        {suitePreview ? LOCKED_CELL_NOTE : '—'}
+                        {suitePreview ? NO_DATA_NOTE : '—'}
                       </span>
                     )}
                   </td>

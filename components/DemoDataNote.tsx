@@ -11,6 +11,16 @@ import { Lock } from 'lucide-react'
 /** Shown wherever a demo dashboard withholds a value behind a lock. */
 export const DEMO_SUBSCRIBE_NOTE = 'Please subscribe for real world data'
 
+/**
+ * Shown where the research genuinely has nothing to put in a cell.
+ *
+ * This is not the paywall: a withheld value shows a lock and the subscribe
+ * note, because there is something to buy. A cell the workbook left blank and
+ * the contact lookup could not fill has nothing behind it, and saying
+ * "subscribe for these details" there promises data that does not exist.
+ */
+export const NO_DATA_NOTE = "Sorry, we don't have data for this"
+
 export const DEMO_DATA_NOTE =
   'Data presented is dummy, and simply for representation. Kindly subscribe to this platform for real world data.'
 
