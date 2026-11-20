@@ -51,3 +51,12 @@ export function distributorDatabaseTitle(marketName: string | null | undefined):
 export function customerModuleLabel(stored: string | null | undefined): string {
   return (stored ?? '').trim() || 'Customer Intelligence'
 }
+
+/**
+ * The singular noun for one company in that first directory: "Customer" by
+ * default, "Supplier" when the module has been renamed to Supplier Intelligence.
+ */
+export function customerNoun(stored: string | null | undefined): string {
+  const label = customerModuleLabel(stored)
+  return label.replace(/s*intelligences*$/i, '').trim() || 'Customer'
+}

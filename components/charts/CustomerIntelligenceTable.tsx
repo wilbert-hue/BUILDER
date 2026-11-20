@@ -16,7 +16,7 @@ import { useGeneratedMethodology } from '@/lib/use-generated-methodology'
 import { DEMO_SUBSCRIBE_NOTE, NO_DATA_NOTE } from '@/components/DemoDataNote'
 import { isPlaceholderValue } from '@/lib/intelligence-demo-generator'
 import { useLocksEnabled } from '@/lib/lock-mode'
-import { distributorNoun } from '@/lib/module-labels'
+import { customerNoun, distributorNoun } from '@/lib/module-labels'
 import type { MethodologySection } from '@/lib/intelligence-sheet-types'
 
 // ---------------------------------------------------------------------------
@@ -483,6 +483,7 @@ export function CustomerIntelligenceTable({
     staticCustomerProp1,
     staticDistributorProp1,
     b2bSurveyData,
+    customerModuleLabel: customerLabelOverride,
   } = useDashboardStore()
 
   // Column hiding and the subscribe placeholder belong to the survey-backed
@@ -558,7 +559,7 @@ export function CustomerIntelligenceTable({
 
   /** "Distributor" on a trade market, "Channel Partner" on a technology one. */
   const typeLabel =
-    intelligenceSource === 'distributor' ? distributorNoun(dashboardName) : 'Customer'
+    intelligenceSource === 'distributor' ? distributorNoun(dashboardName) : customerNoun(customerLabelOverride)
 
   const bannerTitle = useMemo(
     () => `${marketLine} – ${typeLabel} Database`,

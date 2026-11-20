@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useDashboardStore } from '@/lib/store'
-import { customerModuleLabel, distributorDatabaseTitle } from '@/lib/module-labels'
+import { customerModuleLabel, customerNoun, distributorDatabaseTitle } from '@/lib/module-labels'
 import { CustomerIntelligenceTable } from '@/components/charts/CustomerIntelligenceTable'
 import DistributorsIntelligence from '@/components/charts/DistributorsIntelligenceTable'
 
@@ -68,7 +68,7 @@ export function IntelligenceDatabaseViews({ preferredSource }: IntelligenceDatab
   return (
     <div className="w-full">
       {effectiveSource === 'customer' && showCustomer && (
-        <CustomerIntelligenceTable title={`B2B - ${customerModuleLabel(customerLabelOverride)} Database - Existing customers and Potential customers`} />
+        <CustomerIntelligenceTable title={`B2B - ${customerModuleLabel(customerLabelOverride)} Database - Existing ${customerNoun(customerLabelOverride).toLowerCase()}s and Potential ${customerNoun(customerLabelOverride).toLowerCase()}s`} />
       )}
 
       {effectiveSource === 'distributor' && showDistributor &&
