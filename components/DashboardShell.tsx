@@ -44,7 +44,7 @@ import { AccoladesSection } from '@/components/AccoladesSection'
 import { WhyCoherentSection } from '@/components/WhyCoherentSection'
 import { CountryGate } from '@/components/CountryGate'
 import { marketScopeLabels, reportScopeLabel } from '@/lib/market-scope'
-import { distributorShortLabel } from '@/lib/module-labels'
+import { customerModuleLabel, distributorShortLabel } from '@/lib/module-labels'
 import { DemoDataNote } from '@/components/DemoDataNote'
 import Image from 'next/image'
 
@@ -124,6 +124,7 @@ export function DashboardShell({ readOnly = false }: Props) {
     b2cSurveyData,
     quadrantData,
     tradeTables,
+    customerModuleLabel: customerLabelOverride,
   } = useDashboardStore()
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('bar')
@@ -318,12 +319,13 @@ export function DashboardShell({ readOnly = false }: Props) {
   if (!hasMarketData && (hasCustomerWorkbook || hasDistributorWorkbook || hasAnySurvey)) {
     // "Channel Partners" on a technology market, "Distributors" elsewhere.
     const distributorLabel = distributorShortLabel(dashboardName)
+    const customerLabel = customerModuleLabel(customerLabelOverride)
     const intelligenceLabel =
       intelligenceType === 'distributor'
         ? distributorLabel
         : intelligenceType === 'both'
-        ? `Customer Intelligence & ${distributorLabel}`
-        : 'Customer Intelligence'
+        ? `${customerLabel} & ${distributorLabel}`
+        : customerLabel
 
     const hasWorkbook = hasCustomerWorkbook || hasDistributorWorkbook
     // Panels available in this cut-down shell, in display order.
@@ -334,7 +336,7 @@ export function DashboardShell({ readOnly = false }: Props) {
     // distributor table unreachable behind a heading that named it.
     const standalonePanels: { key: string; label: string }[] = [
       ...(hasCustomerWorkbook
-        ? [{ key: 'intelligence-customer', label: 'Customer Intelligence' }]
+        ? [{ key: 'intelligence-customer', label: customerLabel }]
         : []),
       ...(hasDistributorWorkbook
         ? [{ key: 'intelligence-distributor', label: distributorLabel }]
@@ -552,7 +554,7 @@ export function DashboardShell({ readOnly = false }: Props) {
                         {isChartVisible('comparison-table') && <button onClick={() => setActiveTab('table')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'table' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>Table</button>}
                         {isChartVisible('waterfall') && <button onClick={() => setActiveTab('waterfall')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'waterfall' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>Waterfall</button>}
                         {isChartVisible('bubble') && <button onClick={() => setActiveTab('bubble')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bubble' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>Bubble Chart</button>}
-                        {isChartVisible('customer-intelligence') && <button onClick={() => setActiveTab('customer-intelligence')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'customer-intelligence' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>Customer Intelligence</button>}
+                        {isChartVisible('customer-intelligence') && <button onClick={() => setActiveTab('customer-intelligence')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'customer-intelligence' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>{customerModuleLabel(customerLabelOverride)}</button>}
                         {isChartVisible('distributor-intelligence') && <button onClick={() => setActiveTab('distributor-intelligence')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'distributor-intelligence' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>{distributorShortLabel(dashboardName)}</button>}
                         {isChartVisible('pricing-grouped-bar') && <button onClick={() => setActiveTab('pricing-bar')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'pricing-bar' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>Pricing Bar</button>}
                         {isChartVisible('pricing-multi-line') && <button onClick={() => setActiveTab('pricing-line')} className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'pricing-line' ? 'border-blue-500 text-blue-600' : 'border-transparent text-black hover:text-black hover:border-gray-300'}`}>Pricing Line</button>}

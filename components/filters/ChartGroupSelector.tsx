@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useDashboardStore } from '@/lib/store'
 import { CHART_GROUPS, tradeChartGroups, tradeTableIdOf, type ChartGroupId } from '@/lib/chart-groups'
 import { BarChart3, Target, Trophy, Users, Building2, DollarSign, Factory, ShoppingCart, Grid2x2, ListTree, Ship } from 'lucide-react'
-import { distributorShortLabel } from '@/lib/module-labels'
+import { customerModuleLabel, distributorShortLabel } from '@/lib/module-labels'
 
 // Icon mapping for each chart group
 const iconMap: Record<string, any> = {
@@ -52,6 +52,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
     showDemoB2bSurvey,
     showDemoB2cSurvey,
     dashboardName,
+    customerModuleLabel: customerLabelOverride,
   } = useDashboardStore()
 
   const hasMarketData = !!data
@@ -132,6 +133,14 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
 
   // Groups whose backing dataset is actually present. Shared by both layouts so
   // visibility rules live in exactly one place.
+  /** What a group is called here: two modules are named per dashboard. */
+  const labelOf = (group: { id: string; label: string }) =>
+    group.id === 'customer-intelligence'
+      ? customerModuleLabel(customerLabelOverride)
+      : group.id === 'distributor-intelligence'
+        ? distributorShortLabel(dashboardName)
+        : group.label
+
   const availableGroups = CHART_GROUPS.filter((group) => {
     // Taxonomy is the workbook's own segmentation, so it stands on market data alone.
     if (group.id === 'taxonomy') return hasMarketData
@@ -176,7 +185,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
                 title={group.description}
               >
                 <Icon className={`h-4 w-4 flex-shrink-0 ${isSelected ? 'text-white' : 'text-black'}`} />
-                <span className="whitespace-nowrap text-xs font-medium">{group.label}</span>
+                <span className="whitespace-nowrap text-xs font-medium">{labelOf(group)}</span>
               </button>
             )
           })}

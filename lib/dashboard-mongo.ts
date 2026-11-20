@@ -84,6 +84,8 @@ export interface DashboardDocument {
   /** Review links only: render what a lock would otherwise withhold. */
   previewUnlocked?: boolean
   logoChoice?: 'coherent' | 'wmr' | 'mi'
+  /** Renames the customer-intelligence module on this dashboard alone. */
+  customerModuleLabel?: string | null
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

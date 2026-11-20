@@ -39,3 +39,15 @@ export function distributorDatabaseTitle(marketName: string | null | undefined):
     ? 'Channel Partners and Potential Channel Partners'
     : 'Distributor Intelligence Database - Existing distributors and Potential distributors'
 }
+
+/**
+ * What the first intelligence module is called on this dashboard.
+ *
+ * It lists customers on most dashboards, but not on all of them: a supply-side
+ * study puts the vendors themselves in that table, and calling the panel
+ * "Customer Intelligence" there names the wrong side of the trade. The label is
+ * stored per dashboard, so renaming one leaves every other dashboard alone.
+ */
+export function customerModuleLabel(stored: string | null | undefined): string {
+  return (stored ?? '').trim() || 'Customer Intelligence'
+}

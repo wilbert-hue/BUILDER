@@ -22,6 +22,7 @@ export default function SharedDashboardPage() {
   const {
     setData,
     setDashboardName,
+    setCustomerModuleLabel,
     setCurrency,
     setIntelligenceType,
     setRawIntelligenceData,
@@ -70,6 +71,7 @@ export default function SharedDashboardPage() {
           loadDefaultFilters()
         }
         setDashboardName(snapshot.name || null)
+        setCustomerModuleLabel(snapshot.customerModuleLabel ?? null)
         setCurrency(snapshot.currency || 'USD')
         if (snapshot.intelligenceType) setIntelligenceType(snapshot.intelligenceType)
         const rawIntel = parseIntelligenceSheet(snapshot.rawIntelligenceData)

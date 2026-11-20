@@ -47,6 +47,8 @@ interface DashboardStore {
   pricingFilters: FilterState // Pricing analysis filters
   pricingFiltersLoaded: boolean // Track if pricing filters are loaded
   dashboardName: string | null // Custom dashboard name
+  /** Overrides the name of the customer-intelligence module on this dashboard. */
+  customerModuleLabel: string | null
   currency: 'USD' | 'INR' | 'EUR' // Currency preference
   showDemoNote: boolean // Toggle for demo data disclaimer note
   showDemoQuadrant: boolean // Toggle for the generated demo Coherent Quadrant
@@ -95,6 +97,7 @@ interface DashboardStore {
   resetPricingFilters: () => void
   loadDefaultPricingFilters: () => void
   setDashboardName: (name: string | null) => void
+  setCustomerModuleLabel: (label: string | null) => void
   setCurrency: (currency: 'USD' | 'INR' | 'EUR') => void
   setShowDemoNote: (show: boolean) => void
   setShowDemoQuadrant: (show: boolean) => void
@@ -297,6 +300,7 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   pricingFilters: getDefaultPricingFilters(null),
   pricingFiltersLoaded: false,
   dashboardName: null,
+  customerModuleLabel: null,
   currency: 'USD',
   showDemoNote: false,
   showDemoQuadrant: false,
@@ -575,6 +579,8 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   },
 
   setDashboardName: (name) => set({ dashboardName: name }),
+
+  setCustomerModuleLabel: (label) => set({ customerModuleLabel: label }),
   
   setCurrency: (currency) => set({ currency }),
 
