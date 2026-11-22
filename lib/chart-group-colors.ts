@@ -66,3 +66,13 @@ export function readableOn(hex: string): string {
 export function tintOf(hex: string, alpha = '1F'): string {
   return `${hex}${alpha}`
 }
+
+/**
+ * The band drawn behind the bar under the pointer.
+ *
+ * Recharts paints that band mid-grey by default, and on a horizontal bar chart
+ * it covers the whole row — the bar included — so the colour the reader came to
+ * read turns grey exactly when they point at it. A faint wash of the house
+ * green marks the row without hiding what is on it.
+ */
+export const HOVER_BAND = { fill: 'rgba(82, 182, 154, 0.14)' }

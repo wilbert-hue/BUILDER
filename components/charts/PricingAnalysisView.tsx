@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { HOVER_BAND } from '@/lib/chart-group-colors'
 import { useDashboardStore } from '@/lib/store'
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -311,6 +312,7 @@ export function PricingAnalysisView({ activeTab }: PricingAnalysisViewProps) {
                     tickFormatter={(value) => `$${value.toLocaleString()}`}
                   />
                   <Tooltip
+                    cursor={HOVER_BAND}
                     formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
                     contentStyle={{ backgroundColor: 'white', border: '1px solid #E5E7EB', borderRadius: '8px' }}
                   />
@@ -347,6 +349,7 @@ export function PricingAnalysisView({ activeTab }: PricingAnalysisViewProps) {
                     tickFormatter={(value) => `$${value.toLocaleString()}`}
                   />
                   <Tooltip
+                    cursor={HOVER_BAND}
                     formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
                     contentStyle={{ backgroundColor: 'white', border: '1px solid #E5E7EB', borderRadius: '8px' }}
                   />

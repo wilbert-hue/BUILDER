@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { HOVER_BAND } from '@/lib/chart-group-colors'
 import {
   BarChart,
   Bar,
@@ -382,7 +383,7 @@ export function GroupedBarChart({ title, height = 400 }: GroupedBarChartProps) {
               return value.toFixed(3)
             }}
           />
-          <Tooltip 
+          <Tooltip cursor={HOVER_BAND}
             content={<CustomTooltip />} 
             trigger="hover"
             isAnimationActive={false}

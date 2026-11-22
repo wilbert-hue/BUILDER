@@ -13,6 +13,7 @@
  */
 
 import { LockedStrip } from '@/components/DemoDataNote'
+import { HOVER_BAND } from '@/lib/chart-group-colors'
 import { useMemo } from 'react'
 import {
   PieChart,
@@ -189,6 +190,7 @@ export function BuyerSurveyChart({ options, chartType, index = 0, height = 340 }
               tick={(props) => <WrappedTick {...props} width={wrapChars} anchor="end" />}
             />
             <Tooltip
+              cursor={HOVER_BAND}
               formatter={(v: any) => [fmtPct(Number(v)), 'Share']}
               contentStyle={{ fontSize: 12, borderRadius: 6 }}
             />
@@ -226,6 +228,7 @@ export function BuyerSurveyChart({ options, chartType, index = 0, height = 340 }
             />
             <YAxis tick={{ fontSize: 12, fill: '#475569' }} unit="%" />
             <Tooltip
+              cursor={HOVER_BAND}
               formatter={(v: any) => [fmtPct(Number(v)), 'Share']}
               contentStyle={{ fontSize: 12, borderRadius: 6 }}
             />
@@ -272,6 +275,7 @@ export function BuyerSurveyChart({ options, chartType, index = 0, height = 340 }
               ))}
             </Pie>
             <Tooltip
+              cursor={HOVER_BAND}
               formatter={(v: any, n: any) => [fmtPct(Number(v)), n]}
               contentStyle={{ fontSize: 12, borderRadius: 6 }}
             />
@@ -305,6 +309,7 @@ export function BuyerSurveyChart({ options, chartType, index = 0, height = 340 }
               ))}
             </Pie>
             <Tooltip
+              cursor={HOVER_BAND}
               formatter={(v: any, n: any) => [fmtPct(Number(v)), n]}
               contentStyle={{ fontSize: 12, borderRadius: 6 }}
             />
@@ -341,6 +346,7 @@ export function BuyerSurveyChart({ options, chartType, index = 0, height = 340 }
             ))}
           </Pie>
           <Tooltip
+            cursor={HOVER_BAND}
             formatter={(v: any, n: any) => [fmtPct(Number(v)), n]}
             contentStyle={{ fontSize: 12, borderRadius: 6 }}
           />

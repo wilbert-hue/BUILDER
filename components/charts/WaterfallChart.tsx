@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { HOVER_BAND } from '@/lib/chart-group-colors'
 import {
   BarChart,
   Bar,
@@ -278,7 +279,7 @@ export function WaterfallChart({ title, height = 400 }: WaterfallChartProps) {
             width={80}
             label={{ value: yAxisLabel, angle: -90, position: 'insideLeft', offset: 10, style: { textAnchor: 'middle' } }}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip cursor={HOVER_BAND} content={<CustomTooltip />} />
           <Legend 
             wrapperStyle={{ paddingTop: '20px', color: '#000000' }}
             formatter={(value) => <span style={{ color: '#000000' }}>{value}</span>}
