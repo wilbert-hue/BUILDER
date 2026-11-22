@@ -43,7 +43,7 @@ import { CredibilitySection } from '@/components/CredibilitySection'
 import { AccoladesSection } from '@/components/AccoladesSection'
 import { WhyCoherentSection } from '@/components/WhyCoherentSection'
 import { CountryGate } from '@/components/CountryGate'
-import { marketScopeLabels, reportScopeLabel } from '@/lib/market-scope'
+import { marketScopeLabels, reportScopeLabel, titleCaseGeography } from '@/lib/market-scope'
 import { customerModuleLabel, distributorShortLabel } from '@/lib/module-labels'
 import { DemoDataNote } from '@/components/DemoDataNote'
 import Image from 'next/image'
@@ -125,6 +125,8 @@ export function DashboardShell({ readOnly = false }: Props) {
     quadrantData,
     tradeTables,
     customerModuleLabel: customerLabelOverride,
+    customerScope,
+    distributorScope,
   } = useDashboardStore()
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('bar')
@@ -242,6 +244,43 @@ export function DashboardShell({ readOnly = false }: Props) {
       .filter(Boolean)
     return [...new Set(named)]
   }, [b2bSurveyData, b2cSurveyData, quadrantData])
+
+  /**
+   * The geography one module reports on.
+   *
+   * The modules on a dashboard need not share a scope: a customer directory
+   * can list buyers worldwide while the survey beside it sampled India alone.
+   * Each view therefore names its own geography, rather than the dashboard
+   * picking one label and putting it above all of them.
+   *
+   * Surveys and quadrants state their geography in the file itself. A
+   * directory does not, so the builder records it; absent that, the dashboard's
+   * own scope is the fallback.
+   */
+  const scopeOfModule = (key: string): string | null => {
+    switch (key) {
+      case 'b2b-survey':
+        return b2bSurveyData?.geo ?? null
+      case 'b2c-survey':
+        return b2cSurveyData?.geo ?? null
+      case 'coherent-quadrant':
+        return quadrantData?.geo ?? null
+      case 'customer-intelligence':
+      case 'intelligence-customer':
+        return customerScope ?? null
+      case 'distributor-intelligence':
+      case 'intelligence-distributor':
+        return distributorScope ?? null
+      default:
+        return null
+    }
+  }
+
+  /** The label above the view now on screen. */
+  const scopeFor = (key: string) => {
+    const own = scopeOfModule(key)
+    return own ? titleCaseGeography(own) : coveredScope
+  }
 
   /** Every geography the market name covers, so a four country study lists four. */
   const countryOptions = useMemo(() => {
@@ -416,7 +455,12 @@ export function DashboardShell({ readOnly = false }: Props) {
               </div>
             )}
             <div className="p-6">
-              <CountryGate countries={countryOptions} covered={gateCovered} open={surveyRegions}>
+              <CountryGate
+                key={activePanel}
+                countries={surveyRegions.length ? surveyRegions : [scopeFor(activePanel)]}
+                covered={surveyRegions.length ? gateCovered : scopeFor(activePanel)}
+                open={surveyRegions}
+              >
                 {activePanel === 'intelligence-customer' && (
                   <IntelligenceDatabaseViews preferredSource="customer" />
                 )}
@@ -530,7 +574,13 @@ export function DashboardShell({ readOnly = false }: Props) {
           } space-y-6`}>
 
             {/* Every view except Market Analysis is country-scoped. */}
-            <MaybeCountryGate key={selectedChartGroup} enabled={isCountryScoped} countries={countryOptions} covered={gateCovered} open={surveyRegions}>
+            <MaybeCountryGate
+              key={selectedChartGroup}
+              enabled={isCountryScoped}
+              countries={surveyRegions.length ? surveyRegions : [scopeFor(selectedChartGroup)]}
+              covered={surveyRegions.length ? gateCovered : scopeFor(selectedChartGroup)}
+              open={surveyRegions}
+            >
 
             {/* A trade sheet stands alone: it has no chart tabs to switch
                 between, so the tab bar below is skipped entirely. */}

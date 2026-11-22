@@ -147,6 +147,8 @@ export async function POST(request: NextRequest) {
       staticCustomerProp1: body.staticCustomerProp1 === true,
       staticDistributorProp1: body.staticDistributorProp1 === true,
       logoChoice: (['wmr', 'mi'].includes(body.logoChoice as string) ? body.logoChoice : 'coherent') as 'coherent' | 'wmr' | 'mi',
+      customerScope: typeof body.customerScope === 'string' && body.customerScope.trim() ? body.customerScope.trim().slice(0, 40) : null,
+      distributorScope: typeof body.distributorScope === 'string' && body.distributorScope.trim() ? body.distributorScope.trim().slice(0, 40) : null,
       customerModuleLabel:
         typeof body.customerModuleLabel === 'string' && body.customerModuleLabel.trim()
           ? body.customerModuleLabel.trim().slice(0, 60)

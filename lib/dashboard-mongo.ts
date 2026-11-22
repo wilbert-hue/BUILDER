@@ -86,6 +86,9 @@ export interface DashboardDocument {
   logoChoice?: 'coherent' | 'wmr' | 'mi'
   /** Renames the customer-intelligence module on this dashboard alone. */
   customerModuleLabel?: string | null
+  /** The geography each directory covers, where it differs from the market. */
+  customerScope?: string | null
+  distributorScope?: string | null
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

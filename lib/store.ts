@@ -49,6 +49,9 @@ interface DashboardStore {
   dashboardName: string | null // Custom dashboard name
   /** Overrides the name of the customer-intelligence module on this dashboard. */
   customerModuleLabel: string | null
+  /** The geography each directory covers, when it differs from the dashboard. */
+  customerScope: string | null
+  distributorScope: string | null
   currency: 'USD' | 'INR' | 'EUR' // Currency preference
   showDemoNote: boolean // Toggle for demo data disclaimer note
   showDemoQuadrant: boolean // Toggle for the generated demo Coherent Quadrant
@@ -98,6 +101,8 @@ interface DashboardStore {
   loadDefaultPricingFilters: () => void
   setDashboardName: (name: string | null) => void
   setCustomerModuleLabel: (label: string | null) => void
+  setCustomerScope: (scope: string | null) => void
+  setDistributorScope: (scope: string | null) => void
   setCurrency: (currency: 'USD' | 'INR' | 'EUR') => void
   setShowDemoNote: (show: boolean) => void
   setShowDemoQuadrant: (show: boolean) => void
@@ -301,6 +306,8 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   pricingFiltersLoaded: false,
   dashboardName: null,
   customerModuleLabel: null,
+  customerScope: null,
+  distributorScope: null,
   currency: 'USD',
   showDemoNote: false,
   showDemoQuadrant: false,
@@ -581,6 +588,10 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   setDashboardName: (name) => set({ dashboardName: name }),
 
   setCustomerModuleLabel: (label) => set({ customerModuleLabel: label }),
+
+  setCustomerScope: (scope) => set({ customerScope: scope }),
+
+  setDistributorScope: (scope) => set({ distributorScope: scope }),
   
   setCurrency: (currency) => set({ currency }),
 
