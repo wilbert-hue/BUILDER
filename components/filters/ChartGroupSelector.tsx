@@ -5,6 +5,7 @@ import { useDashboardStore } from '@/lib/store'
 import { CHART_GROUPS, tradeChartGroups, tradeTableIdOf, type ChartGroupId } from '@/lib/chart-groups'
 import { BarChart3, Target, Trophy, Users, Building2, DollarSign, Factory, ShoppingCart, Grid2x2, ListTree, Ship } from 'lucide-react'
 import { customerModuleLabel, distributorShortLabel } from '@/lib/module-labels'
+import { chartGroupColor, readableOn, tintOf } from '@/lib/chart-group-colors'
 
 // Icon mapping for each chart group
 const iconMap: Record<string, any> = {
@@ -165,27 +166,32 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
 
   if (orientation === 'horizontal') {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-3 py-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="mr-1 text-xs font-semibold text-black">Chart View</h3>
-          {availableGroups.map((group) => {
+      <div className="w-full bg-white rounded-lg shadow-sm border border-gray-200 px-5 py-3.5">
+        <div className="flex flex-wrap items-center gap-3">
+          <h3 className="mr-2 text-sm font-semibold text-black">Chart View</h3>
+          {availableGroups.map((group, i) => {
             const Icon = iconMap[group.id] || (tradeIds.has(group.id) ? Ship : BarChart3)
             const isSelected = selectedChartGroup === group.id
+            // Each section keeps its colour whether or not it is selected:
+            // filled when it is, a wash of the same colour when it is not.
+            const color = chartGroupColor(group.id, i)
             return (
               <button
                 key={group.id}
                 onClick={() => setSelectedChartGroup(group.id)}
-                className={`
-                  flex items-center gap-2 rounded-md px-3 py-2 transition-all duration-200
-                  ${isSelected
-                    ? 'bg-gradient-to-r from-[#52B69A] to-[#34A0A4] text-white shadow-sm'
-                    : 'text-black hover:bg-gray-50'
-                  }
-                `}
+                className="flex items-center gap-2 rounded-md px-4 py-2.5 transition-all duration-200"
+                style={
+                  isSelected
+                    ? { background: color, color: readableOn(color), boxShadow: '0 1px 3px rgba(15,61,92,0.25)' }
+                    : { background: tintOf(color), color: '#154360' }
+                }
                 title={group.description}
               >
-                <Icon className={`h-4 w-4 flex-shrink-0 ${isSelected ? 'text-white' : 'text-black'}`} />
-                <span className="whitespace-nowrap text-xs font-medium">{labelOf(group)}</span>
+                <Icon
+                  className="h-4 w-4 flex-shrink-0"
+                  style={{ color: isSelected ? readableOn(color) : color === '#D9ED92' ? '#154360' : color }}
+                />
+                <span className="whitespace-nowrap text-sm font-medium">{labelOf(group)}</span>
               </button>
             )
           })}
@@ -199,26 +205,28 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
       <h3 className="text-xs font-semibold text-black mb-2">Chart View</h3>
 
       <div className="space-y-1">
-        {availableGroups.map((group) => {
+        {availableGroups.map((group, i) => {
           const Icon = iconMap[group.id] || (tradeIds.has(group.id) ? Ship : BarChart3)
           const isSelected = selectedChartGroup === group.id
+          // The sidebar carries the same colour per section as the strip, so a
+          // reader who learns one layout knows the other.
+          const color = chartGroupColor(group.id, i)
 
           return (
             <button
               key={group.id}
               onClick={() => setSelectedChartGroup(group.id)}
-              className={`
-                w-full text-left px-2 py-1.5 rounded transition-all duration-200
-                flex items-center space-x-2
-                ${isSelected 
-                  ? 'bg-gradient-to-r from-[#52B69A] to-[#34A0A4] text-white shadow-sm' 
-                  : 'hover:bg-gray-50 text-black hover:text-black'
-                }
-              `}
+              className="w-full text-left px-2 py-1.5 rounded transition-all duration-200 flex items-center space-x-2"
+              style={
+                isSelected
+                  ? { background: color, color: readableOn(color), boxShadow: '0 1px 3px rgba(15,61,92,0.25)' }
+                  : { background: tintOf(color), color: '#154360' }
+              }
               title={group.description}
             >
-              <Icon 
-                className={`w-3 h-3 flex-shrink-0 ${isSelected ? 'text-white' : 'text-black'}`} 
+              <Icon
+                className="w-3 h-3 flex-shrink-0"
+                style={{ color: isSelected ? readableOn(color) : color === '#D9ED92' ? '#154360' : color }}
               />
               <span className="text-xs font-medium leading-tight">
                 {group.label === 'Coherent Opportunity Matrix'
