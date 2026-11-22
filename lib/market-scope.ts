@@ -185,12 +185,19 @@ export function marketScopeLabels(
  * and that beats the word in the market title, which is often "Global" simply
  * because the family of reports is. The title is the fallback, for a dashboard
  * whose views carry no geography of their own.
+ *
+ * `isGlobalStudy` outranks both. A dashboard whose workbook is cut Global over
+ * regions reports on the world, and one India-only module inside it does not
+ * make it an India dashboard: labelling the strip "India" there says the whole
+ * dashboard — its global customer directory included — stops at one country.
  */
 export function reportScopeLabel(
   reportGeographies: (string | null | undefined)[],
   marketName: string | null | undefined,
-  geographies: string[] = []
+  geographies: string[] = [],
+  isGlobalStudy = false
 ): string {
+  if (isGlobalStudy) return DEFAULT_MARKET_SCOPE
   for (const geo of reportGeographies) {
     const value = (geo ?? '').trim()
     if (value) return titleCaseGeography(value)

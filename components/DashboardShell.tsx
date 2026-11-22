@@ -207,15 +207,25 @@ export function DashboardShell({ readOnly = false }: Props) {
     * a global study, "Brazil" for a Brazilian one — never a country the report
     * does not cover.
     */
+  /**
+   * True when the workbook itself is a world study: "Global" sits at the root
+   * of its geography tree, with the regions beneath it.
+   */
+  const isGlobalStudy = useMemo(
+    () => (data?.dimensions?.geographies?.global ?? []).some((g) => /^global$/i.test(g)),
+    [data]
+  )
+
   /** The geography these views report on; the one the reports themselves state. */
   const coveredScope = useMemo(
     () =>
       reportScopeLabel(
         [quadrantData?.geo, b2bSurveyData?.geo, b2cSurveyData?.geo],
         dashboardName ?? data?.metadata?.market_name,
-        data?.dimensions?.geographies?.all_geographies ?? []
+        data?.dimensions?.geographies?.all_geographies ?? [],
+        isGlobalStudy
       ),
-    [quadrantData, b2bSurveyData, b2cSurveyData, dashboardName, data]
+    [quadrantData, b2bSurveyData, b2cSurveyData, dashboardName, data, isGlobalStudy]
   )
 
   /** A survey run region by region names the strip itself; every region has data. */
