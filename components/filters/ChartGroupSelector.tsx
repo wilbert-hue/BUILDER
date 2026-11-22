@@ -167,8 +167,18 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
   if (orientation === 'horizontal') {
     return (
       <div className="w-full bg-white rounded-lg shadow-sm border border-gray-200 px-5 py-3.5">
-        <div className="flex flex-wrap items-center gap-3">
-          <h3 className="mr-2 text-sm font-semibold text-black">Chart View</h3>
+      {/*
+        A grid rather than a wrapping row: the sections share the width in
+        equal columns and spill onto a second row once there are too many for
+        one. A flex row sized them by their labels, so a dashboard carrying
+        every module pushed the longest name off the right edge.
+      */}
+      <div className="flex items-center gap-4">
+        <h3 className="shrink-0 text-sm font-semibold text-black">Chart View</h3>
+        <div
+          className="grid flex-1 gap-3"
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}
+        >
           {availableGroups.map((group, i) => {
             const Icon = iconMap[group.id] || (tradeIds.has(group.id) ? Ship : BarChart3)
             const isSelected = selectedChartGroup === group.id
@@ -179,7 +189,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
               <button
                 key={group.id}
                 onClick={() => setSelectedChartGroup(group.id)}
-                className="flex flex-1 min-w-[170px] items-center justify-center gap-2 rounded-md px-4 py-3 transition-all duration-200"
+                className="flex w-full min-w-0 items-center justify-center gap-2 rounded-md px-3 py-3 transition-all duration-200"
                 style={
                   isSelected
                     ? {
@@ -198,11 +208,15 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
                   className="h-4 w-4 flex-shrink-0"
                   style={{ color: isSelected ? readableOn(color) : color === '#D9ED92' ? '#154360' : color }}
                 />
-                <span className="whitespace-nowrap text-sm font-medium">{labelOf(group)}</span>
+                {/* A long module name is clipped rather than allowed to push
+                    its neighbours out of the strip; the full name is the
+                    button's tooltip. */}
+                <span className="truncate text-sm font-medium">{labelOf(group)}</span>
               </button>
             )
           })}
         </div>
+      </div>
       </div>
     )
   }
