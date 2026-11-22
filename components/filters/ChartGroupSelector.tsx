@@ -179,11 +179,18 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
               <button
                 key={group.id}
                 onClick={() => setSelectedChartGroup(group.id)}
-                className="flex items-center gap-2 rounded-md px-4 py-2.5 transition-all duration-200"
+                className="flex flex-1 min-w-[170px] items-center justify-center gap-2 rounded-md px-4 py-3 transition-all duration-200"
                 style={
                   isSelected
-                    ? { background: color, color: readableOn(color), boxShadow: '0 1px 3px rgba(15,61,92,0.25)' }
-                    : { background: tintOf(color), color: '#154360' }
+                    ? {
+                        background: color,
+                        color: readableOn(color),
+                        // Both states carry a border, so selecting one does not
+                        // resize it and shuffle the row.
+                        border: `1px solid ${color}`,
+                        boxShadow: '0 1px 3px rgba(15,61,92,0.25)',
+                      }
+                    : { background: tintOf(color, '33'), color: '#154360', border: `1px solid ${color}` }
                 }
                 title={group.description}
               >
@@ -220,7 +227,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
               style={
                 isSelected
                   ? { background: color, color: readableOn(color), boxShadow: '0 1px 3px rgba(15,61,92,0.25)' }
-                  : { background: tintOf(color), color: '#154360' }
+                  : { background: tintOf(color, '33'), color: '#154360' }
               }
               title={group.description}
             >
