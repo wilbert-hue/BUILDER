@@ -50,6 +50,8 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
     quadrantData,
     tradeTables,
     showDemoQuadrant,
+    staticCustomerProp1,
+    staticDistributorProp1,
     showDemoB2bSurvey,
     showDemoB2cSurvey,
     dashboardName,
@@ -69,14 +71,19 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
     distributorProposition3Data?.rows?.length
   )
 
+  // A locked demo template stands in for a directory that has not arrived: it
+  // is built from the market itself and needs no stored rows, so the module it
+  // represents is present even though no workbook was uploaded.
   const hasCustomerIntelligenceData = !!(
     hasCustomerWorkbookRows ||
-    customerIntelligenceData?.length
+    customerIntelligenceData?.length ||
+    staticCustomerProp1
   )
 
   const hasDistributorIntelligenceData = !!(
     hasDistributorWorkbookRows ||
-    distributorIntelligenceData?.length
+    distributorIntelligenceData?.length ||
+    staticDistributorProp1
   )
 
   // Check if competitive intelligence data exists

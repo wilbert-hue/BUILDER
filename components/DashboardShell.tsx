@@ -127,6 +127,8 @@ export function DashboardShell({ readOnly = false }: Props) {
     customerModuleLabel: customerLabelOverride,
     customerScope,
     distributorScope,
+    staticCustomerProp1,
+    staticDistributorProp1,
   } = useDashboardStore()
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('bar')
@@ -139,15 +141,20 @@ export function DashboardShell({ readOnly = false }: Props) {
   const sidebarScrollRef = useRef<HTMLDivElement>(null)
 
   const hasMarketData = !!data
+  // A directory counts as present when the dashboard carries its locked demo
+  // template too: that template is built from the market itself and needs no
+  // stored rows, and without this the module it stands for had no tab to open.
   const hasCustomerWorkbook = !!(
     rawIntelligenceData?.rows?.length ||
     proposition2Data?.rows?.length ||
-    proposition3Data?.rows?.length
+    proposition3Data?.rows?.length ||
+    staticCustomerProp1
   )
   const hasDistributorWorkbook = !!(
     distributorRawIntelligenceData?.rows?.length ||
     distributorProposition2Data?.rows?.length ||
-    distributorProposition3Data?.rows?.length
+    distributorProposition3Data?.rows?.length ||
+    staticDistributorProp1
   )
 
   const hasUploadedB2bSurvey = !!b2bSurveyData?.segments?.length
