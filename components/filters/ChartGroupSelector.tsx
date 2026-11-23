@@ -179,16 +179,15 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
       >
       {/*
         The heading sits above the sections rather than beside them, and the
-        sections share one row: equal columns that shrink together, so a
-        dashboard carrying every module still reads as a single line. Names too
-        long for their column are clipped, with the full name on the tooltip.
+        sections share one row. Each button is sized by its own label and the
+        spare width is split between them, so a long name such as "Vendor
+        Intelligence (Coherent Quadrant)" is never clipped; equal columns used
+        to cut it. If the row genuinely runs out of width the strip wraps to a
+        second line rather than truncating anything.
       */}
       <div>
         <h3 className="mb-3 text-sm font-semibold text-white">Chart View</h3>
-        <div
-          className="grid gap-2"
-          style={{ gridTemplateColumns: `repeat(${availableGroups.length}, minmax(0, 1fr))` }}
-        >
+        <div className="flex flex-wrap gap-2">
           {availableGroups.map((group, i) => {
             const Icon = iconMap[group.id] || (tradeIds.has(group.id) ? Ship : BarChart3)
             const isSelected = selectedChartGroup === group.id
@@ -199,9 +198,12 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
               <button
                 key={group.id}
                 onClick={() => setSelectedChartGroup(group.id)}
-                className="flex w-full min-w-0 items-center justify-center gap-2 rounded-md px-2.5 py-2.5 transition-all duration-200"
+                className="flex items-center justify-center gap-2 rounded-md px-3 py-2.5 transition-all duration-200"
                 style={
-                  isSelected
+                  // Content-sized, with the leftover width shared out: the
+                  // widest label sets its own button's width instead of every
+                  // button getting the same share of the strip.
+                  { flex: '1 1 auto', ...(isSelected
                     ? {
                         background: color,
                         color: readableOn(color),
@@ -213,7 +215,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
                     : // Unselected sits on the blue bar, so it reads as a pale
                       // card with its own colour on it rather than a wash that
                       // the bar would swallow.
-                      { background: '#FFFFFF', color: '#154360', border: `1px solid ${color}` }
+                      { background: '#FFFFFF', color: '#154360', border: `1px solid ${color}` }) }
                 }
                 title={group.description}
               >
@@ -221,10 +223,9 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
                   className="h-4 w-4 flex-shrink-0"
                   style={{ color: isSelected ? readableOn(color) : color === '#D9ED92' ? '#7CA82B' : color }}
                 />
-                {/* A long module name is clipped rather than allowed to push
-                    its neighbours out of the strip; the full name is the
-                    button's tooltip. */}
-                <span className="truncate text-sm font-medium">{labelOf(group)}</span>
+                {/* The whole name, on one line: the row wraps before a name
+                    does. */}
+                <span className="whitespace-nowrap text-sm font-medium">{labelOf(group)}</span>
               </button>
             )
           })}
