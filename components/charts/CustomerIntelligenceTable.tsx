@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { findIntelligenceCut } from '@/lib/intelligence-sheet-types'
+import { useSelectedCountry } from '@/components/CountryGate'
 import { usePathname } from 'next/navigation'
 import { useDashboardStore } from '@/lib/store'
 import { Building2, Users } from 'lucide-react'
@@ -483,6 +485,7 @@ export function CustomerIntelligenceTable({
     staticCustomerProp1,
     staticDistributorProp1,
     b2bSurveyData,
+    intelligenceCuts,
     customerModuleLabel: customerLabelOverride,
   } = useDashboardStore()
 
@@ -492,7 +495,16 @@ export function CustomerIntelligenceTable({
 
   const tableCurrency = (currency || data?.metadata?.currency || 'USD') as TableCurrency
 
-  const p1 = intelligenceSource === 'distributor' ? distributorRawIntelligenceData : rawIntelligenceData
+  // A market researched in two geographies keeps a directory for each; the
+  // country strip decides which one this is. Without a cut for the chosen
+  // geography the primary directory stands, as it always did.
+  const selectedGeography = useSelectedCountry()
+  const scopedCut = findIntelligenceCut(intelligenceCuts, intelligenceSource, selectedGeography)
+  const p1 = scopedCut
+    ? (scopedCut.data as any)
+    : intelligenceSource === 'distributor'
+      ? distributorRawIntelligenceData
+      : rawIntelligenceData
   const p2 = intelligenceSource === 'distributor' ? distributorProposition2Data : proposition2Data
   const p3 = intelligenceSource === 'distributor' ? distributorProposition3Data : proposition3Data
 

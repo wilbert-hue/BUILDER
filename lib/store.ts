@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { IntelligenceCut } from '@/lib/intelligence-sheet-types'
 import { sanitiseComparisonData } from '@/lib/label-sanity'
 import type { FilterState, ComparisonData } from './types'
 import type { ChartGroupId } from './chart-groups'
@@ -52,6 +53,8 @@ interface DashboardStore {
   /** The geography each directory covers, when it differs from the dashboard. */
   customerScope: string | null
   distributorScope: string | null
+  /** Directories for a second geography, when a market was researched twice. */
+  intelligenceCuts: IntelligenceCut[]
   currency: 'USD' | 'INR' | 'EUR' // Currency preference
   showDemoNote: boolean // Toggle for demo data disclaimer note
   showDemoQuadrant: boolean // Toggle for the generated demo Coherent Quadrant
@@ -101,6 +104,7 @@ interface DashboardStore {
   loadDefaultPricingFilters: () => void
   setDashboardName: (name: string | null) => void
   setCustomerModuleLabel: (label: string | null) => void
+  setIntelligenceCuts: (cuts: IntelligenceCut[]) => void
   setCustomerScope: (scope: string | null) => void
   setDistributorScope: (scope: string | null) => void
   setCurrency: (currency: 'USD' | 'INR' | 'EUR') => void
@@ -308,6 +312,7 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   customerModuleLabel: null,
   customerScope: null,
   distributorScope: null,
+  intelligenceCuts: [],
   currency: 'USD',
   showDemoNote: false,
   showDemoQuadrant: false,
@@ -588,6 +593,8 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   setDashboardName: (name) => set({ dashboardName: name }),
 
   setCustomerModuleLabel: (label) => set({ customerModuleLabel: label }),
+
+  setIntelligenceCuts: (cuts) => set({ intelligenceCuts: cuts }),
 
   setCustomerScope: (scope) => set({ customerScope: scope }),
 

@@ -8,7 +8,7 @@ import {
 import { assignPartition } from '@/lib/partition'
 import { cacheSet, cacheInvalidate } from '@/lib/slave-cache'
 import { getPublicAppOrigin } from '@/lib/app-origin'
-import { parseIntelligenceSheet } from '@/lib/intelligence-sheet-types'
+import { parseIntelligenceSheet, parseIntelligenceCuts } from '@/lib/intelligence-sheet-types'
 import { parseTradeTables } from '@/lib/trade-tables'
 import { getPublicMongoErrorMessage } from '@/lib/mongo-errors'
 import { getMongoUri } from '@/lib/mongo-config'
@@ -147,6 +147,7 @@ export async function POST(request: NextRequest) {
       staticCustomerProp1: body.staticCustomerProp1 === true,
       staticDistributorProp1: body.staticDistributorProp1 === true,
       logoChoice: (['wmr', 'mi'].includes(body.logoChoice as string) ? body.logoChoice : 'coherent') as 'coherent' | 'wmr' | 'mi',
+      intelligenceCuts: parseIntelligenceCuts(body.intelligenceCuts),
       customerScope: typeof body.customerScope === 'string' && body.customerScope.trim() ? body.customerScope.trim().slice(0, 40) : null,
       distributorScope: typeof body.distributorScope === 'string' && body.distributorScope.trim() ? body.distributorScope.trim().slice(0, 40) : null,
       customerModuleLabel:

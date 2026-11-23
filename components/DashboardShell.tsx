@@ -129,6 +129,7 @@ export function DashboardShell({ readOnly = false }: Props) {
     distributorScope,
     staticCustomerProp1,
     staticDistributorProp1,
+    intelligenceCuts,
   } = useDashboardStore()
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('bar')
@@ -300,6 +301,22 @@ export function DashboardShell({ readOnly = false }: Props) {
    * A module split region by region names its own regions instead, and a
    * dashboard scoped to somewhere else entirely — Brazil, say — is left alone.
    */
+  /**
+   * Geographies this module actually holds a directory for, beyond its own
+   * scope: a market researched twice carries a second cut, and that cut is
+   * open rather than paywalled.
+   */
+  const openFor = (key: string) => {
+    const source =
+      key === 'distributor-intelligence' || key === 'intelligence-distributor'
+        ? 'distributor'
+        : key === 'customer-intelligence' || key === 'intelligence-customer'
+          ? 'customer'
+          : null
+    const cuts = source ? intelligenceCuts.filter((c) => c.source === source).map((c) => c.scope) : []
+    return [...surveyRegions, ...cuts]
+  }
+
   const GLOBAL_AND_INDIA = ['Global', 'India']
   const countriesFor = (key: string) => {
     if (surveyRegions.length) return surveyRegions
@@ -486,7 +503,7 @@ export function DashboardShell({ readOnly = false }: Props) {
                 key={activePanel}
                 countries={countriesFor(activePanel)}
                 covered={surveyRegions.length ? gateCovered : scopeFor(activePanel)}
-                open={surveyRegions}
+                open={openFor(activePanel)}
               >
                 {activePanel === 'intelligence-customer' && (
                   <IntelligenceDatabaseViews preferredSource="customer" />
@@ -610,7 +627,7 @@ export function DashboardShell({ readOnly = false }: Props) {
               enabled={isCountryScoped}
               countries={countriesFor(selectedChartGroup)}
               covered={surveyRegions.length ? gateCovered : scopeFor(selectedChartGroup)}
-              open={surveyRegions}
+              open={openFor(selectedChartGroup)}
             >
 
             {/* A trade sheet stands alone: it has no chart tabs to switch

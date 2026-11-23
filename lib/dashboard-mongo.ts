@@ -89,6 +89,8 @@ export interface DashboardDocument {
   /** The geography each directory covers, where it differs from the market. */
   customerScope?: string | null
   distributorScope?: string | null
+  /** Extra directories, one per geography a market was researched in. */
+  intelligenceCuts?: unknown
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

@@ -107,3 +107,42 @@ export function parseMethodology(value: unknown): MethodologySection[] | undefin
 
   return sections.length > 0 ? withStandardIntentCapture(sections) : undefined
 }
+
+/**
+ * A directory for one geography, where a market has been researched twice.
+ *
+ * These studies come in a worldwide cut and an India cut, and a dashboard can
+ * hold both: the Country strip then switches between them instead of locking
+ * the one that is missing. The primary directory stays where it was, so a
+ * dashboard with a single cut is unaffected.
+ */
+export interface IntelligenceCut {
+  source: 'customer' | 'distributor'
+  scope: string
+  data: IntelligenceSheetData
+}
+
+export function parseIntelligenceCuts(value: unknown): IntelligenceCut[] {
+  if (!Array.isArray(value)) return []
+  const out: IntelligenceCut[] = []
+  for (const entry of value) {
+    const e = entry as Record<string, unknown>
+    const source = e?.source === 'distributor' ? 'distributor' : 'customer'
+    const scope = typeof e?.scope === 'string' ? e.scope.trim().slice(0, 40) : ''
+    const data = parseIntelligenceSheet(e?.data)
+    if (scope && data?.rows?.length) out.push({ source, scope, data })
+  }
+  return out
+}
+
+/** The cut covering a geography, or null when the dashboard holds only one. */
+export function findIntelligenceCut(
+  cuts: IntelligenceCut[] | null | undefined,
+  source: 'customer' | 'distributor',
+  scope: string | null | undefined
+): IntelligenceCut | null {
+  if (!cuts?.length || !scope) return null
+  return (
+    cuts.find((c) => c.source === source && c.scope.toLowerCase() === scope.toLowerCase()) ?? null
+  )
+}

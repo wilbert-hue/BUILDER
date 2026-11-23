@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation'
 import { useDashboardStore } from '@/lib/store'
 import { DashboardShell } from '@/components/DashboardShell'
 import type { DashboardDocument } from '@/lib/dashboard-mongo'
-import { parseIntelligenceSheet } from '@/lib/intelligence-sheet-types'
+import { parseIntelligenceCuts, parseIntelligenceSheet } from '@/lib/intelligence-sheet-types'
 import { reviveBuyerSurvey } from '@/lib/buyer-survey-types'
 import { reviveQuadrantReport } from '@/lib/quadrant-types'
 import { parseTradeTables } from '@/lib/trade-tables'
@@ -23,6 +23,7 @@ export default function SharedDashboardPage() {
     setData,
     setDashboardName,
     setCustomerModuleLabel,
+    setIntelligenceCuts,
     setCustomerScope,
     setDistributorScope,
     setCurrency,
@@ -74,6 +75,7 @@ export default function SharedDashboardPage() {
         }
         setDashboardName(snapshot.name || null)
         setCustomerModuleLabel(snapshot.customerModuleLabel ?? null)
+        setIntelligenceCuts(parseIntelligenceCuts(snapshot.intelligenceCuts))
         setCustomerScope(snapshot.customerScope ?? null)
         setDistributorScope(snapshot.distributorScope ?? null)
         setCurrency(snapshot.currency || 'USD')
