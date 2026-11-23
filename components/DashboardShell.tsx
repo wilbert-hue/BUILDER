@@ -525,8 +525,12 @@ export function DashboardShell({ readOnly = false }: Props) {
         )}
 
         {/* Chart View is always a full-width strip above the dashboard, so the
-            views are switched from the same place whatever the sidebar does. */}
-        <div className="mb-6">
+            views are switched from the same place whatever the sidebar does —
+            and it stays put while the page scrolls, since a reader deep in a
+            long table should not have to scroll back up to change view. The
+            sidebar's own sticky panels sit at top-6, so this sits above them
+            and they come to rest beneath it. */}
+        <div className="sticky top-0 z-30 -mx-1 mb-6 bg-gray-50 px-1 py-2">
           <ChartGroupSelector orientation="horizontal" />
         </div>
 
@@ -535,7 +539,7 @@ export function DashboardShell({ readOnly = false }: Props) {
           {showSidebar && (
           <aside className={`transition-all duration-300 ${sidebarCollapsed ? 'col-span-12 lg:col-span-1' : 'col-span-12 lg:col-span-3'}`}>
             {sidebarCollapsed ? (
-              <div className="sticky top-6">
+              <div className="sticky top-32">
                 <div className="bg-white rounded-lg shadow-sm p-2 space-y-4">
                   <button
                     onClick={() => { setShowInsights(false); setSidebarCollapsed(false) }}
@@ -550,7 +554,7 @@ export function DashboardShell({ readOnly = false }: Props) {
                 </div>
               </div>
             ) : (
-              <div className="sticky top-6 self-start">
+              <div className="sticky top-32 self-start">
                 <div className="max-h-[calc(100vh-6rem)] relative">
                   <CustomScrollbar containerRef={sidebarScrollRef}>
                     <div ref={sidebarScrollRef} className="overflow-y-auto pr-6 space-y-3 sidebar-scroll max-h-[calc(100vh-6rem)]">
@@ -710,7 +714,7 @@ export function DashboardShell({ readOnly = false }: Props) {
           {/* Insights Panel */}
           {showInsights && (
             <aside className="col-span-12 lg:col-span-3 transition-all duration-300">
-              <div className="sticky top-6">
+              <div className="sticky top-32">
                 <div className="bg-white rounded-lg shadow-sm">
                   <div className="bg-yellow-50 px-4 py-3 border-b border-yellow-200 rounded-t-lg">
                     <div className="flex items-center justify-between">
