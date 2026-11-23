@@ -289,6 +289,26 @@ export function DashboardShell({ readOnly = false }: Props) {
     return own ? titleCaseGeography(own) : coveredScope
   }
 
+  /**
+   * The geographies a module offers.
+   *
+   * These studies come in a worldwide cut and an India cut, and a dashboard
+   * usually holds one of the two. Both are offered anyway: the one the research
+   * covers opens, and the other shows the subscribe panel — so a reader can see
+   * that the other cut exists rather than being left to assume it does not.
+   *
+   * A module split region by region names its own regions instead, and a
+   * dashboard scoped to somewhere else entirely — Brazil, say — is left alone.
+   */
+  const GLOBAL_AND_INDIA = ['Global', 'India']
+  const countriesFor = (key: string) => {
+    if (surveyRegions.length) return surveyRegions
+    const scope = scopeFor(key)
+    return GLOBAL_AND_INDIA.some((g) => g.toLowerCase() === scope.toLowerCase())
+      ? GLOBAL_AND_INDIA
+      : [scope]
+  }
+
   /** Every geography the market name covers, so a four country study lists four. */
   const countryOptions = useMemo(() => {
     if (surveyRegions.length) return surveyRegions
@@ -464,7 +484,7 @@ export function DashboardShell({ readOnly = false }: Props) {
             <div className="p-6">
               <CountryGate
                 key={activePanel}
-                countries={surveyRegions.length ? surveyRegions : [scopeFor(activePanel)]}
+                countries={countriesFor(activePanel)}
                 covered={surveyRegions.length ? gateCovered : scopeFor(activePanel)}
                 open={surveyRegions}
               >
@@ -588,7 +608,7 @@ export function DashboardShell({ readOnly = false }: Props) {
             <MaybeCountryGate
               key={selectedChartGroup}
               enabled={isCountryScoped}
-              countries={surveyRegions.length ? surveyRegions : [scopeFor(selectedChartGroup)]}
+              countries={countriesFor(selectedChartGroup)}
               covered={surveyRegions.length ? gateCovered : scopeFor(selectedChartGroup)}
               open={surveyRegions}
             >
