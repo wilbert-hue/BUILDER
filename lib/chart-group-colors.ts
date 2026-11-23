@@ -76,3 +76,6 @@ export function tintOf(hex: string, alpha = '1F'): string {
  * green marks the row without hiding what is on it.
  */
 export const HOVER_BAND = { fill: 'rgba(82, 182, 154, 0.14)' }
+
+/** The Chart View bar itself: the house navy, with the sections sitting on it. */
+export const CHART_VIEW_BAR = '#1E6091'

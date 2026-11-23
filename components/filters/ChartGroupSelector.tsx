@@ -5,7 +5,7 @@ import { useDashboardStore } from '@/lib/store'
 import { CHART_GROUPS, tradeChartGroups, tradeTableIdOf, type ChartGroupId } from '@/lib/chart-groups'
 import { BarChart3, Target, Trophy, Users, Building2, DollarSign, Factory, ShoppingCart, Grid2x2, ListTree, Ship } from 'lucide-react'
 import { customerModuleLabel, distributorShortLabel } from '@/lib/module-labels'
-import { chartGroupColor, readableOn, tintOf } from '@/lib/chart-group-colors'
+import { CHART_VIEW_BAR, chartGroupColor, readableOn, tintOf } from '@/lib/chart-group-colors'
 
 // Icon mapping for each chart group
 const iconMap: Record<string, any> = {
@@ -166,18 +166,21 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
 
   if (orientation === 'horizontal') {
     return (
-      <div className="w-full bg-white rounded-lg shadow-sm border border-gray-200 px-5 py-3.5">
+      <div
+        className="w-full rounded-lg shadow-sm border px-5 py-4"
+        style={{ background: CHART_VIEW_BAR, borderColor: '#17496F' }}
+      >
       {/*
-        A grid rather than a wrapping row: the sections share the width in
-        equal columns and spill onto a second row once there are too many for
-        one. A flex row sized them by their labels, so a dashboard carrying
-        every module pushed the longest name off the right edge.
+        The heading sits above the sections rather than beside them, and the
+        sections share one row: equal columns that shrink together, so a
+        dashboard carrying every module still reads as a single line. Names too
+        long for their column are clipped, with the full name on the tooltip.
       */}
-      <div className="flex items-center gap-4">
-        <h3 className="shrink-0 text-sm font-semibold text-black">Chart View</h3>
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-white">Chart View</h3>
         <div
-          className="grid flex-1 gap-3"
-          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}
+          className="grid gap-2"
+          style={{ gridTemplateColumns: `repeat(${availableGroups.length}, minmax(0, 1fr))` }}
         >
           {availableGroups.map((group, i) => {
             const Icon = iconMap[group.id] || (tradeIds.has(group.id) ? Ship : BarChart3)
@@ -189,7 +192,7 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
               <button
                 key={group.id}
                 onClick={() => setSelectedChartGroup(group.id)}
-                className="flex w-full min-w-0 items-center justify-center gap-2 rounded-md px-3 py-3 transition-all duration-200"
+                className="flex w-full min-w-0 items-center justify-center gap-2 rounded-md px-2.5 py-2.5 transition-all duration-200"
                 style={
                   isSelected
                     ? {
@@ -198,15 +201,18 @@ export function ChartGroupSelector({ orientation = 'vertical' }: ChartGroupSelec
                         // Both states carry a border, so selecting one does not
                         // resize it and shuffle the row.
                         border: `1px solid ${color}`,
-                        boxShadow: '0 1px 3px rgba(15,61,92,0.25)',
+                        boxShadow: '0 1px 3px rgba(5,30,50,0.35)',
                       }
-                    : { background: tintOf(color, '33'), color: '#154360', border: `1px solid ${color}` }
+                    : // Unselected sits on the blue bar, so it reads as a pale
+                      // card with its own colour on it rather than a wash that
+                      // the bar would swallow.
+                      { background: '#FFFFFF', color: '#154360', border: `1px solid ${color}` }
                 }
                 title={group.description}
               >
                 <Icon
                   className="h-4 w-4 flex-shrink-0"
-                  style={{ color: isSelected ? readableOn(color) : color === '#D9ED92' ? '#154360' : color }}
+                  style={{ color: isSelected ? readableOn(color) : color === '#D9ED92' ? '#7CA82B' : color }}
                 />
                 {/* A long module name is clipped rather than allowed to push
                     its neighbours out of the strip; the full name is the
