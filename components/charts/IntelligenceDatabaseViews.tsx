@@ -24,23 +24,34 @@ export function IntelligenceDatabaseViews({ preferredSource }: IntelligenceDatab
     intelligenceType,
     dashboardName,
     customerModuleLabel: customerLabelOverride,
+    staticCustomerProp1,
+    staticDistributorProp1,
   } = useDashboardStore()
 
+  // The locked demo template counts as the directory being present: it is
+  // built from the market and needs no uploaded rows. Without this, asking for
+  // the distributor panel on a dashboard whose distributor list is still a
+  // demo fell through to the customer table — the wrong directory under the
+  // right heading.
   const hasCustomerWorkbook = !!(
     rawIntelligenceData?.rows?.length ||
     proposition2Data?.rows?.length ||
-    proposition3Data?.rows?.length
+    proposition3Data?.rows?.length ||
+    staticCustomerProp1
   )
   const hasDistributorWorkbook = !!(
     distributorRawIntelligenceData?.rows?.length ||
     distributorProposition2Data?.rows?.length ||
-    distributorProposition3Data?.rows?.length
+    distributorProposition3Data?.rows?.length ||
+    staticDistributorProp1
   )
 
   const showCustomer =
-    (intelligenceType === 'customer' || intelligenceType === 'both') && hasCustomerWorkbook
+    (intelligenceType === 'customer' || intelligenceType === 'both' || staticCustomerProp1) &&
+    hasCustomerWorkbook
   const showDistributor =
-    (intelligenceType === 'distributor' || intelligenceType === 'both') && hasDistributorWorkbook
+    (intelligenceType === 'distributor' || intelligenceType === 'both' || staticDistributorProp1) &&
+    hasDistributorWorkbook
   // Seeded from the caller so a distributor panel opens on the distributor
   // table, rather than rendering the customer one for a frame first.
   const [activeSource, setActiveSource] = useState<IntelligenceSource>(
