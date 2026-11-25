@@ -37,6 +37,10 @@ const has = (field: string) => ({
   $not: [{ $in: [{ $type: field }, ['missing', 'null']] }],
 })
 const anyOf = (...fields: string[]) => ({ $or: fields.map(has) })
+/** True when `field` is an array with at least one element (mirrors the viewer's `?.length` checks). */
+const nonEmpty = (field: string) => ({
+  $gt: [{ $size: { $cond: [{ $isArray: field }, field, []] } }, 0],
+})
 const isTrue = (field: string) => ({ $eq: [field, true] })
 
 function classify(modules: ModuleState[]): { category: DashboardCategory; partial: boolean } {
@@ -82,19 +86,35 @@ export async function GET() {
           staticDistributorProp1: 1,
           hasMarket: anyOf('$data', '$dataCompressed', '$dataS3Key'),
           hasPricing: anyOf('$pricingAnalysisData', '$pricingAnalysisCompressed', '$pricingAnalysisS3Key'),
-          hasB2b: anyOf('$b2bSurveyData', '$b2bSurveyCompressed', '$b2bSurveyS3Key'),
-          hasB2c: anyOf('$b2cSurveyData', '$b2cSurveyCompressed', '$b2cSurveyS3Key'),
-          hasQuadrant: anyOf('$quadrantData', '$quadrantCompressed', '$quadrantS3Key'),
+          // Same rules the dashboard viewer uses to decide whether a module
+          // shows. Offloaded (compressed / S3) payloads can't be inspected
+          // here, so their presence alone counts.
+          hasB2b: {
+            $or: [nonEmpty('$b2bSurveyData.segments'), has('$b2bSurveyCompressed'), has('$b2bSurveyS3Key')],
+          },
+          hasB2c: {
+            $or: [nonEmpty('$b2cSurveyData.segments'), has('$b2cSurveyCompressed'), has('$b2cSurveyS3Key')],
+          },
+          hasQuadrant: {
+            $or: [
+              nonEmpty('$quadrantData.charted'),
+              nonEmpty('$quadrantData.others'),
+              has('$quadrantCompressed'),
+              has('$quadrantS3Key'),
+            ],
+          },
           hasCustomerData: {
             $or: [
-              { $in: ['$intelligenceType', ['customer', 'both']] },
-              has('$rawIntelligenceData'),
+              nonEmpty('$rawIntelligenceData.rows'),
+              nonEmpty('$proposition2Data.rows'),
+              nonEmpty('$proposition3Data.rows'),
             ],
           },
           hasDistributorData: {
             $or: [
-              { $in: ['$intelligenceType', ['distributor', 'both']] },
-              has('$distributorRawIntelligenceData'),
+              nonEmpty('$distributorRawIntelligenceData.rows'),
+              nonEmpty('$distributorProposition2Data.rows'),
+              nonEmpty('$distributorProposition3Data.rows'),
             ],
           },
           isStaticCustomer: isTrue('$staticCustomerProp1'),
