@@ -11,9 +11,12 @@ import { getMongoDatabaseName, getMongoCollectionName } from '@/lib/mongo-config
  *  - demo     : every module on the dashboard is demo
  *  - presales : market analysis is demo, every other module is real
  *  - real     : no module is demo
- *  - mixed    : anything else (e.g. real market but a demo quadrant)
+ *
+ * Any other demo/real combination (e.g. real market but a demo quadrant) is
+ * also counted as presales, but flagged `partial: true` so it can be told
+ * apart from a strict pre-sales dashboard later.
  */
-export type DashboardCategory = 'demo' | 'presales' | 'real' | 'mixed'
+export type DashboardCategory = 'demo' | 'presales' | 'real'
 
 export type ModuleKey =
   | 'market'
@@ -36,13 +39,13 @@ const has = (field: string) => ({
 const anyOf = (...fields: string[]) => ({ $or: fields.map(has) })
 const isTrue = (field: string) => ({ $eq: [field, true] })
 
-function classify(modules: ModuleState[]): DashboardCategory {
+function classify(modules: ModuleState[]): { category: DashboardCategory; partial: boolean } {
   const demoCount = modules.filter(m => m.demo).length
-  if (demoCount === 0) return 'real'
-  if (demoCount === modules.length) return 'demo'
+  if (demoCount === 0) return { category: 'real', partial: false }
+  if (demoCount === modules.length) return { category: 'demo', partial: false }
   const market = modules.find(m => m.key === 'market')
-  if (market?.demo && demoCount === 1) return 'presales'
-  return 'mixed'
+  const strict = !!market?.demo && demoCount === 1
+  return { category: 'presales', partial: !strict }
 }
 
 export async function GET() {
@@ -107,6 +110,8 @@ export async function GET() {
     createdAt: string | null
     currency: string
     category: DashboardCategory
+    /** Pre-sales that is not strictly "only market analysis is demo". */
+    partial: boolean
     modules: ModuleState[]
   }
 
@@ -142,7 +147,7 @@ export async function GET() {
       name: d.name ?? '',
       createdAt: d.createdAt ?? null,
       currency: d.currency ?? '',
-      category: classify(modules),
+      ...classify(modules),
       modules,
     }
     const owner = d.ownerId ?? null
@@ -156,12 +161,7 @@ export async function GET() {
     : []
   const emailById = new Map(userDocs.map((u: any) => [u._id, u.email]))
 
-  const emptyCounts = (): Record<DashboardCategory, number> => ({
-    demo: 0,
-    presales: 0,
-    real: 0,
-    mixed: 0,
-  })
+  const emptyCounts = () => ({ demo: 0, presales: 0, real: 0, presalesPartial: 0 })
   const totals = emptyCounts()
 
   const stats = [...byOwner.entries()]
@@ -170,6 +170,10 @@ export async function GET() {
       for (const d of dashboards) {
         counts[d.category]++
         totals[d.category]++
+        if (d.partial) {
+          counts.presalesPartial++
+          totals.presalesPartial++
+        }
       }
       dashboards.sort(
         (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()

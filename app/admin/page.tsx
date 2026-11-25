@@ -3,7 +3,8 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-type Category = 'demo' | 'presales' | 'real' | 'mixed'
+type Category = 'demo' | 'presales' | 'real'
+type Counts = Record<Category, number> & { presalesPartial: number }
 type ModuleKey = 'market' | 'customer' | 'distributor' | 'pricing' | 'b2b' | 'b2c' | 'quadrant'
 
 interface Dashboard {
@@ -12,6 +13,8 @@ interface Dashboard {
   createdAt: string | null
   currency: string
   category: Category
+  /** Pre-sales, but not strictly "only market analysis is demo". */
+  partial: boolean
   modules: { key: ModuleKey; demo: boolean }[]
 }
 
@@ -19,14 +22,14 @@ interface UserStat {
   email: string
   ownerId: string | null
   count: number
-  counts: Record<Category, number>
+  counts: Counts
   lastCreated: string | null
   dashboards: Dashboard[]
 }
 
 interface StatsResponse {
   stats: UserStat[]
-  totals: Record<Category, number>
+  totals: Counts
   totalDashboards: number
   totalUsers: number
 }
@@ -61,15 +64,6 @@ const CATEGORY: Record<
     chip: 'bg-amber-500/10 text-amber-300 ring-amber-500/30',
     bar: 'bg-amber-400',
     ring: 'ring-amber-400/60',
-  },
-  mixed: {
-    label: 'Mixed',
-    desc: 'Other combinations of demo and real modules',
-    dot: 'bg-slate-400',
-    text: 'text-slate-300',
-    chip: 'bg-slate-500/10 text-slate-300 ring-slate-500/30',
-    bar: 'bg-slate-500',
-    ring: 'ring-slate-400/60',
   },
 }
 
@@ -191,7 +185,7 @@ export default function AdminPage() {
 
   const total = data.totalDashboards || 1
   const pct = (n: number) => Math.round((n / total) * 100)
-  const visibleCats: Category[] = data.totals.mixed > 0 ? [...MAIN, 'mixed'] : MAIN
+  const visibleCats: Category[] = MAIN
 
   return (
     <div className="min-h-screen bg-[#070b14] text-white">
@@ -260,7 +254,11 @@ export default function AdminPage() {
                 <p className="text-3xl font-semibold tabular-nums">{data.totals[c].toLocaleString('en-IN')}</p>
                 <span className={`text-xs font-medium ${CATEGORY[c].text}`}>{pct(data.totals[c])}%</span>
               </div>
-              <p className="mt-1 text-xs text-slate-500 truncate">{CATEGORY[c].desc}</p>
+              <p className="mt-1 text-xs text-slate-500 truncate">
+                {c === 'presales' && data.totals.presalesPartial > 0
+                  ? `incl. ${data.totals.presalesPartial} partial`
+                  : CATEGORY[c].desc}
+              </p>
             </button>
           ))}
           <div className="rounded-2xl p-5 border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01]">
@@ -377,6 +375,11 @@ export default function AdminPage() {
                         {visibleCats.map(c => (
                           <td key={c} className="px-4 py-4 text-center tabular-nums">
                             <span className={row.counts[c] ? CATEGORY[c].text : 'text-slate-600'}>{row.counts[c]}</span>
+                            {c === 'presales' && row.counts.presalesPartial > 0 && (
+                              <span className="block text-[10px] text-slate-500" title="Pre-sales dashboards where more than the market analysis is demo, or market is real">
+                                {row.counts.presalesPartial} partial
+                              </span>
+                            )}
                           </td>
                         ))}
                         <td className="px-4 py-4 text-center tabular-nums font-semibold text-white">{row.count}</td>
@@ -401,6 +404,7 @@ export default function AdminPage() {
                                   <div className="flex min-w-0 items-center gap-3">
                                     <span className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset ${CATEGORY[d.category].chip}`}>
                                       {CATEGORY[d.category].label}
+                                      {d.partial && <span className="opacity-70"> · Partial</span>}
                                     </span>
                                     <a
                                       href={`/shared/${d.id}`}
