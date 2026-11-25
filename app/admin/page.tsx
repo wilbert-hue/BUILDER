@@ -49,7 +49,7 @@ const CATEGORY: Record<
   },
   presales: {
     label: 'Pre-Sales',
-    desc: 'Demo market analysis, all other modules real',
+    desc: 'Mix of demo and real modules',
     dot: 'bg-sky-400',
     text: 'text-sky-300',
     chip: 'bg-sky-500/10 text-sky-300 ring-sky-500/30',
@@ -254,11 +254,7 @@ export default function AdminPage() {
                 <p className="text-3xl font-semibold tabular-nums">{data.totals[c].toLocaleString('en-IN')}</p>
                 <span className={`text-xs font-medium ${CATEGORY[c].text}`}>{pct(data.totals[c])}%</span>
               </div>
-              <p className="mt-1 text-xs text-slate-500 truncate">
-                {c === 'presales' && data.totals.presalesPartial > 0
-                  ? `incl. ${data.totals.presalesPartial} partial`
-                  : CATEGORY[c].desc}
-              </p>
+              <p className="mt-1 text-xs text-slate-500 truncate">{CATEGORY[c].desc}</p>
             </button>
           ))}
           <div className="rounded-2xl p-5 border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01]">
@@ -374,13 +370,7 @@ export default function AdminPage() {
                         </td>
                         {visibleCats.map(c => (
                           <td key={c} className="px-4 py-4 text-center tabular-nums">
-                            <span className={row.counts[c] ? CATEGORY[c].text : 'text-slate-600'}>{row.counts[c]}</span>
-                            {c === 'presales' && row.counts.presalesPartial > 0 && (
-                              <span className="block text-[10px] text-slate-500" title="Pre-sales dashboards where more than the market analysis is demo, or market is real">
-                                {row.counts.presalesPartial} partial
-                              </span>
-                            )}
-                          </td>
+                            <span className={row.counts[c] ? CATEGORY[c].text : 'text-slate-600'}>{row.counts[c]}</span>                          </td>
                         ))}
                         <td className="px-4 py-4 text-center tabular-nums font-semibold text-white">{row.count}</td>
                         <td className="px-4 py-4">
@@ -403,9 +393,7 @@ export default function AdminPage() {
                                 <div key={d.id} className="flex items-center justify-between gap-4 px-4 py-2.5 text-xs hover:bg-white/[0.02]">
                                   <div className="flex min-w-0 items-center gap-3">
                                     <span className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset ${CATEGORY[d.category].chip}`}>
-                                      {CATEGORY[d.category].label}
-                                      {d.partial && <span className="opacity-70"> · Partial</span>}
-                                    </span>
+                                      {CATEGORY[d.category].label}                                    </span>
                                     <a
                                       href={`/shared/${d.id}`}
                                       target="_blank"
